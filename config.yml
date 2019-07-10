@@ -1,0 +1,55 @@
+ForgeLevel:
+  '1':
+    exp: 0
+    name: 实习锻造师
+  '2':
+    exp: 50
+    name: 正式锻造师
+  '3':
+    exp: 150
+    name: 锻造熟手
+  '4':
+    exp: 200
+    name: 初级锻造师
+  '5':
+    exp: 250
+    name: 中级锻造师
+  '6':
+    exp: 300
+    name: 终极锻造师
+Strength:
+  '1':
+    name: 粗糙
+    mix: 0
+    max: 0.78
+    attribute: 0.5
+  '2':
+    name: 普通
+    mix: 0.78
+    max: 0.85
+    attribute: 0.65
+  '3':
+    name: 精致
+    mix: 0.85
+    max: 0.9
+    attribute: 0.8
+  '4':
+    name: 优良
+    mix: 0.9
+    max: 0.93
+    attribute: 0.95
+  '5':
+    name: 史诗
+    mix: 0.93
+    max: 0.96
+    attribute: 1.1
+  '6':
+    name: 传说
+    mix: 0.96
+    max: 0.99
+    attribute: 1.25
+  '7':
+    name: 逆天
+    mix: 0.99
+    max: 1
+    attribute: 1.4

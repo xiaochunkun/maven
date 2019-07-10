@@ -1,0 +1,7 @@
+name: Forge
+main: xiaokun.forge.Forge
+version: 1.0
+author: Xiaokun
+depends: [PlaceHolderAPI]
+commands:
+  dz:
