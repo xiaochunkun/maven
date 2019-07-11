@@ -35,15 +35,4 @@ public class Config {
         return yml.getString("ForgeLevel." + level + ".name");
     }
 
-    public static double getStrengthAttribute(final String level) {
-        return yml.getDouble("Strength." + level + ".attribute");
-    }
-
-    public static String getStrengthName(final String level) {
-        return yml.getString("Strength." + level + ".name");
-    }
-    public static int getTime() {
-        return yml.getInt("Forge.time");
-    }
-
 }
