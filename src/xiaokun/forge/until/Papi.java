@@ -5,8 +5,7 @@ import org.bukkit.entity.Player;
 
 public class Papi extends PlaceholderExpansion {
     @Override
-    public boolean canRegister()
-    {
+    public boolean canRegister() {
         return true;
     }
 
@@ -22,20 +21,29 @@ public class Papi extends PlaceholderExpansion {
 
     @Override
     public String getVersion() {
-        return "1.0.0";
+        return "1.0.1";
     }
 
     @Override
-    public String onPlaceholderRequest(Player player, String identifier){
-        if(player == null){
+    public String onPlaceholderRequest(Player player, String identifier) {
+        if (player == null) {
             return "";
         }
-        if(identifier.equals("level")){
-            System.out.println(PlayerData.getLevel(player));
+        if (identifier.equals("level")) {
             return String.valueOf(PlayerData.getLevel(player));
         }
-        if(identifier.equals("exp")){
+        if (identifier.equals("exp")) {
             return String.valueOf(PlayerData.getExp(player));
+        }
+        if (identifier.equals("needexp")) {
+            if (Config.getExp(String.valueOf(PlayerData.getLevel(player) + 1)) > 0) {
+                return String.valueOf(Config.getExp(String.valueOf(PlayerData.getLevel(player) + 1)) - PlayerData.getExp(player));
+            } else {
+                return "0";
+            }
+        }
+        if (identifier.equals("nextlevel")) {
+            return String.valueOf(Config.getExp(String.valueOf(PlayerData.getLevel(player) + 1)));
         }
         return null;
     }

@@ -19,22 +19,26 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ClickInventoryEvent implements Listener {
     private Inventory pInv;
+    private String key = null;
 
     @EventHandler
     public void clickInventory(InventoryClickEvent event) {
         final Player player = (Player) event.getWhoClicked();
         final Inventory inv = event.getInventory();
         final ItemStack eItem = event.getCurrentItem();
-        String key = null;
         switch (inv.getName()) {
             case "锻造台":
             case "可锻造列表":
             case "开始锻造":
             case "历史锻造":
             case "请拿走你锻造的装备":
+            case "锻造中":
                 event.setCancelled(true);
                 break;
         }
@@ -65,7 +69,7 @@ public class ClickInventoryEvent implements Listener {
                         player.closeInventory();
                         player.openInventory(pInv);
                     }
-                    if (inv.getName().equals("历史锻造")){
+                    if (inv.getName().equals("历史锻造")) {
                         Turn.setItemNum(Turn.getItemNum() - 1);
                         pInv = CreateInventory.getInventory(3, player);
                         player.closeInventory();
@@ -79,7 +83,7 @@ public class ClickInventoryEvent implements Listener {
                         player.closeInventory();
                         player.openInventory(pInv);
                     }
-                    if (inv.getName().equals("历史锻造")){
+                    if (inv.getName().equals("历史锻造")) {
                         Turn.setItemNum(Turn.getItemNum() + 1);
                         pInv = CreateInventory.getInventory(3, player);
                         player.closeInventory();
@@ -134,65 +138,87 @@ public class ClickInventoryEvent implements Listener {
                             }
                             player.sendMessage("§c材料不全，已经退还全部材料");
                         } else {
-                            final YamlConfiguration ymls = ItemConfig.getItemYml(key);
-                            ItemStack items = ymls.getItemStack(key);
-                            if ((items != null) && (items.getItemMeta() != null)) {
-                                ItemMeta meta = items.getItemMeta();
-                                List<String> l = new ArrayList<String>();
-                                List<String> l2 = meta.getLore();
-                                String level = Randoms.getLevel();
-                                double ratio = Randoms.getLevelAttribute(level);
-                                String name = Randoms.getLevelName(level);
-                                for (String s : l2) {
-                                    if (s.indexOf("$forge-") != -1) {
-                                        double math = Double.valueOf(Forge.getSubString(s, "$forge-", "$"));
-                                        final int att = (int) Math.rint(math * ratio);
-                                        s = s.replace("$forge-" + String.valueOf((int) math) + "$", String.valueOf(att));
-                                        if (s.indexOf("$forge-") != -1) {
-                                            double math2 = Double.valueOf(Forge.getSubString(s, "$forge-", "$"));
-                                            final int att2 = (int) Math.rint(math2 * ratio);
-                                            s = s.replace("$forge-" + String.valueOf((int) math2) + "$", String.valueOf(att2));
+                            ItemStack item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 11);
+                            ItemMeta meta2 = item2.getItemMeta();
+                            meta2.setDisplayName(" ");
+                            item2.setItemMeta(meta2);
+                            Inventory inv2 = Bukkit.createInventory(player, 27, "锻造中");
+
+                            player.closeInventory();
+                            player.openInventory(inv2);
+
+                            AtomicInteger count = new AtomicInteger(0);
+                            new Timer().schedule(new TimerTask() {
+                                @Override
+                                public void run() {
+                                    inv2.setItem(count.get(), item2);
+                                    count.getAndIncrement();
+                                    if (count.get() >= 27) {
+                                        cancel();
+                                        player.closeInventory();
+                                        final YamlConfiguration ymls = ItemConfig.getItemYml(key);
+                                        ItemStack items = ymls.getItemStack(key);
+                                        if ((items != null) && (items.getItemMeta() != null)) {
+                                            ItemMeta meta = items.getItemMeta();
+                                            List<String> l = new ArrayList<String>();
+                                            List<String> l2 = meta.getLore();
+                                            String level = Randoms.getLevel();
+                                            double ratio = Randoms.getLevelAttribute(level);
+                                            String name = Randoms.getLevelName(level);
+                                            for (String s : l2) {
+                                                if (s.indexOf("$forge-") != -1) {
+                                                    double math = Double.valueOf(Forge.getSubString(s, "$forge-", "$"));
+                                                    final int att = (int) Math.rint(math * ratio);
+                                                    s = s.replace("$forge-" + String.valueOf((int) math) + "$", String.valueOf(att));
+                                                    if (s.indexOf("$forge-") != -1) {
+                                                        double math2 = Double.valueOf(Forge.getSubString(s, "$forge-", "$"));
+                                                        final int att2 = (int) Math.rint(math2 * ratio);
+                                                        s = s.replace("$forge-" + String.valueOf((int) math2) + "$", String.valueOf(att2));
+                                                    }
+                                                }
+                                                if (s.indexOf("%quality%") != 1) {
+                                                    s = s.replace("%quality%", name);
+                                                }
+
+                                                if (s.indexOf("%dz_author%") != 1) {
+                                                    s = s.replace("%dz_author%", player.getName());
+                                                }
+                                                l.add(s);
+                                            }
+                                            meta.setLore(l);
+                                            items.setItemMeta(meta);
+
+                                            Inventory newInv = Bukkit.createInventory(null, 9, "请拿走你锻造的装备");
+                                            newInv.setItem(4, items);
+                                            player.openInventory(newInv);
+
+                                            PlayerData.addExp(player, ItemConfig.getExp(key));
+
+                                            ExpChangeEvent e = new ExpChangeEvent(player, ItemConfig.getExp(key));
+                                            Bukkit.getServer().getPluginManager().callEvent(e);
+
+                                            File file = PlayerData.getPlayerFile(player);
+                                            YamlConfiguration yml2 = YamlConfiguration.loadConfiguration(file);
+                                            int num = PlayerData.getItemNum(player);
+                                            yml2.set("item." + String.valueOf(num), items);
+                                            yml2.set("item.num", ++num);
+                                            try {
+                                                yml2.save(file);
+                                            } catch (IOException e1) {
+                                                e1.printStackTrace();
+                                            }
                                         }
                                     }
-                                    if (s.indexOf("%quality%") != 1) {
-                                        s = s.replace("%quality%", name);
-                                    }
-
-                                    if (s.indexOf("%dz_author%") != 1) {
-                                        s = s.replace("%dz_author%", player.getName());
-                                    }
-                                    l.add(s);
                                 }
-                                meta.setLore(l);
-                                items.setItemMeta(meta);
-
-                                Inventory newInv = Bukkit.createInventory(null, 9, "请拿走你锻造的装备");
-                                newInv.setItem(4, items);
-                                player.openInventory(newInv);
-
-                                PlayerData.addExp(player, ItemConfig.getExp(key));
-
-                                ExpChangeEvent e = new ExpChangeEvent(player, ItemConfig.getExp(key));
-                                Bukkit.getServer().getPluginManager().callEvent(e);
-
-                                File file = PlayerData.getPlayerFile(player);
-                                YamlConfiguration yml2 = YamlConfiguration.loadConfiguration(file);
-                                int num = PlayerData.getItemNum(player);
-                                yml2.set("item." + String.valueOf(num), items);
-                                yml2.set("item.num", ++num);
-                                try {
-                                    yml2.save(file);
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
+                            }, 0, 100);
                         }
                     }
                 }
                 break;
             case "请拿走你锻造的装备":
-                if (event.getCurrentItem() != null) {
+                if ((event.getCurrentItem() != null) && (event.getSlot() == 4) && (inv.getName().equals("请拿走你锻造的装备"))) {
                     player.getInventory().addItem(event.getCurrentItem());
+                    player.sendMessage("§a物品已经发送至背包");
                     player.closeInventory();
                 }
                 break;
