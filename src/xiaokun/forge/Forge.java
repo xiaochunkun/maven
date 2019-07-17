@@ -23,19 +23,25 @@ public class Forge extends JavaPlugin {
     private static String pluginName;
     @Getter
     private static JavaPlugin plugin;
+
     @Override
     public void onEnable() {
         pluginName = this.getName();
         plugin = this;
 
         Message.sendNormalMessage("§a==== §6" + pluginName + " > 正在载入§a ====");
-        Message.sendNormalMessage("§a> 当前服务器版本：§f" + getSubString(Bukkit.getVersion(),"MC: ",")"));
+        Message.sendNormalMessage("§a> 当前服务器版本：§f" + getSubString(Bukkit.getVersion(), "MC: ", ")"));
         Message.sendNormalMessage("§a> 作者：§fXiaokun");
         Bukkit.getPluginCommand("dz").setExecutor(new OnCommand());
-        Bukkit.getPluginManager().registerEvents(new ClickInventoryEvent(),this);
-        Bukkit.getPluginManager().registerEvents(new InteractEvent(),this);
-        new Papi().register();
+        Bukkit.getPluginManager().registerEvents(new ClickInventoryEvent(), this);
+        Bukkit.getPluginManager().registerEvents(new InteractEvent(), this);
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new Papi().register();
+        } else {
+            getLogger().info("§a未找到PlaceholderAPI.");
+        }
         Config.loadConfig();
+        Message.loadMessage();
         ItemConfig.loadMapConfig();
         ItemConfig.loadItemConfig();
         ItemConfig.loadMaterialConfig();

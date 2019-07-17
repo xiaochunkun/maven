@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ItemConfig {
     @Getter
-    private static List<String> list = new ArrayList<String>();
+    private static List<String> list;
     @Getter
     private static Map<String, ItemStack> map = new HashMap<String, ItemStack>();
 
@@ -77,7 +77,7 @@ public class ItemConfig {
         l.add("§e§l——————————————————");
         meta.setLore(l);
         item.setItemMeta(meta);
-        yml.set(name, item);
+        yml.set(name + ".0", item);
         try {
             yml.save(file);
         } catch (IOException e) {
@@ -141,6 +141,7 @@ public class ItemConfig {
     }
 
     public static void loadMapConfig() {
+        list = new ArrayList<String>();
         File file = new File("plugins" + File.separator + Forge.getPluginName() + File.separator + "Map");
         if (!file.exists()) {
             file.mkdirs();
@@ -208,6 +209,7 @@ public class ItemConfig {
         }
         return null;
     }
+
     public static int getInvItemNum(final Inventory inv, final ItemStack itemStack) {
         int num = 0;
         for (final ItemStack item : inv.getContents()) {
@@ -222,11 +224,11 @@ public class ItemConfig {
         final ItemStack itemClone = itemStack.clone();
         itemClone.setAmount(1);
         for (int i = 0; i < num; ++i) {
-            inv.removeItem(new ItemStack[] { itemClone });
+            inv.removeItem(new ItemStack[]{itemClone});
         }
     }
 
-    public static int getExp(final String key){
+    public static int getExp(final String key) {
         return getMapYml(key).getInt(key + ".exp");
     }
 }

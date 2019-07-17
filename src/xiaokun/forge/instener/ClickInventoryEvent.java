@@ -1,5 +1,6 @@
 package xiaokun.forge.instener;
 
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -136,7 +137,7 @@ public class ClickInventoryEvent implements Listener {
                                     pInv.setItem(i, map[i]);
                                 }
                             }
-                            player.sendMessage("§c材料不全，已经退还全部材料");
+                            player.sendMessage(Message.getMessage("NoMaterial"));
                         } else {
                             ItemStack item2 = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short) 11);
                             ItemMeta meta2 = item2.getItemMeta();
@@ -156,8 +157,14 @@ public class ClickInventoryEvent implements Listener {
                                     if (count.get() >= 27) {
                                         cancel();
                                         player.closeInventory();
-                                        final YamlConfiguration ymls = ItemConfig.getItemYml(key);
-                                        ItemStack items = ymls.getItemStack(key);
+                                        final YamlConfiguration yml2 = ItemConfig.getItemYml(key);
+                                        final ConfigurationSection section = yml2.getConfigurationSection(key);
+                                        int a = 0;
+                                        for (String k : section.getKeys(false)) {
+                                            a++;
+                                        }
+                                        int sjs = (int) (Math.random() * a);
+                                        ItemStack items = yml2.getItemStack(key + "." + String.valueOf(sjs));
                                         if ((items != null) && (items.getItemMeta() != null)) {
                                             ItemMeta meta = items.getItemMeta();
                                             List<String> l = new ArrayList<String>();
@@ -188,6 +195,14 @@ public class ClickInventoryEvent implements Listener {
                                             meta.setLore(l);
                                             items.setItemMeta(meta);
 
+                                            String notice = Message.getMessage("Announce");
+                                            if (notice.length() != 0) {
+                                                if (eItem.getItemMeta() != null) {
+                                                    TextComponent tc = Message.getTextComponent(notice.replaceAll("%item%", items.getItemMeta().getDisplayName()).replaceAll("%player%", player.getName()), null, items.getItemMeta().getLore());
+                                                    Bukkit.spigot().broadcast(tc);
+                                                }
+                                            }
+
                                             Inventory newInv = Bukkit.createInventory(null, 9, "请拿走你锻造的装备");
                                             newInv.setItem(4, items);
                                             player.openInventory(newInv);
@@ -198,12 +213,12 @@ public class ClickInventoryEvent implements Listener {
                                             Bukkit.getServer().getPluginManager().callEvent(e);
 
                                             File file = PlayerData.getPlayerFile(player);
-                                            YamlConfiguration yml2 = YamlConfiguration.loadConfiguration(file);
+                                            YamlConfiguration yml3 = YamlConfiguration.loadConfiguration(file);
                                             int num = PlayerData.getItemNum(player);
-                                            yml2.set("item." + String.valueOf(num), items);
-                                            yml2.set("item.num", ++num);
+                                            yml3.set("item." + String.valueOf(num), items);
+                                            yml3.set("item.num", ++num);
                                             try {
-                                                yml2.save(file);
+                                                yml3.save(file);
                                             } catch (IOException e1) {
                                                 e1.printStackTrace();
                                             }
@@ -216,8 +231,9 @@ public class ClickInventoryEvent implements Listener {
                 }
                 break;
             case "请拿走你锻造的装备":
+
                 if ((event.getCurrentItem() != null) && (event.getSlot() == 4) && (inv.getName().equals("请拿走你锻造的装备"))) {
-                    player.getInventory().addItem(event.getCurrentItem());
+                    player.getInventory().addItem(eItem);
                     player.sendMessage("§a物品已经发送至背包");
                     player.closeInventory();
                 }

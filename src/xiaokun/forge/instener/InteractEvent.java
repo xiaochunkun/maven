@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import xiaokun.forge.until.ItemConfig;
+import xiaokun.forge.until.Message;
 import xiaokun.forge.until.PlayerData;
 
 import java.io.IOException;
@@ -29,7 +30,7 @@ public class InteractEvent implements Listener {
             if (ItemConfig.getKey(ItemConfig.getMap(), items) != null) {
                 for (String key : section.getKeys(false)) {
                     if ((section.getItemStack(key) != null) && (section.getItemStack(key).equals(items))) {
-                        player.sendMessage("§c你已经学过该图纸，请勿重复学习");
+                        player.sendMessage(Message.getMessage("NoStudyMap"));
                         exist = true;
                     }
                 }
@@ -44,7 +45,7 @@ public class InteractEvent implements Listener {
                             e2.printStackTrace();
                         }
                     } else {
-                        player.sendMessage("§4你的锻造等级不够！！！");
+                        player.sendMessage(Message.getMessage("NoForgeGrade"));
                     }
                     item.setAmount(item.getAmount() - 1);
                 }

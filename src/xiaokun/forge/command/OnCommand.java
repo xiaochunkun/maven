@@ -10,10 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import xiaokun.forge.until.CreateInventory;
-import xiaokun.forge.until.ItemConfig;
-import xiaokun.forge.until.Message;
-import xiaokun.forge.until.Turn;
+import xiaokun.forge.until.*;
 
 import java.util.List;
 
@@ -31,7 +28,7 @@ public class OnCommand implements CommandExecutor {
                 player.openInventory(CreateInventory.getInventory(0, player));
                 return true;
             }
-            if ((args[0].equals("map")) && (player.hasPermission("dz.map")) && (args.length >= 1)) {
+            if ((args[0].equalsIgnoreCase("map")) && (player.hasPermission("dz.map")) && (args.length >= 1)) {
                 if (args.length == 1) {
                     List<String> list = ItemConfig.getList();
                     if (list.size() > 0) {
@@ -55,7 +52,7 @@ public class OnCommand implements CommandExecutor {
                     player.sendMessage("§a---------------§4 点击领取§a---------------");
                     return true;
                 }
-                if (args[1].equals("give") && args.length >= 2) {
+                if (args[1].equalsIgnoreCase("give") && args.length >= 2) {
                     if (!(Bukkit.getPlayer(args[2]) instanceof Player) && (ItemConfig.getList().contains(args[2]))) {
                         final YamlConfiguration yml = ItemConfig.getMapYml(args[2]);
                         final ItemStack item = yml.getItemStack(args[2] + ".item");
@@ -86,7 +83,7 @@ public class OnCommand implements CommandExecutor {
                     }
                 }
             }
-            if ((args[0].equals("item")) && (player.hasPermission("dz.item")) && (args.length >= 1)) {
+            if ((args[0].equalsIgnoreCase("item")) && (player.hasPermission("dz.item")) && (args.length >= 1)) {
                 if (args.length == 1) {
                     List<String> list = ItemConfig.getList();
                     if (list.size() > 0) {
@@ -110,7 +107,7 @@ public class OnCommand implements CommandExecutor {
                     player.sendMessage("§a---------------§4 点击领取§a---------------");
                     return true;
                 }
-                if (args[1].equals("give") && args.length >= 2) {
+                if (args[1].equalsIgnoreCase("give") && args.length >= 2) {
                     if (!(Bukkit.getPlayer(args[2]) instanceof Player) && (ItemConfig.getList().contains(args[2]))) {
                         final YamlConfiguration yml = ItemConfig.getItemYml(args[2]);
                         final ItemStack item = yml.getItemStack(args[2]);
@@ -141,15 +138,15 @@ public class OnCommand implements CommandExecutor {
                     }
                 }
             }
-            if ((args[0].equals("material")) && (player.hasPermission("dz.material")) && (args.length >= 1)) {
+            if ((args[0].equalsIgnoreCase("material")) && (player.hasPermission("dz.material")) && (args.length >= 1)) {
                 if (args.length == 1) {
                     List<String> list = ItemConfig.getList();
                     if (list.size() > 0) {
                         player.sendMessage("§a---------------§4 材料列表§a---------------");
                         for (int i = 0; i < list.size(); i++) {
                             String o = list.get(i);
-                            final YamlConfiguration yml = ItemConfig.getItemYml(o);
-                            final ItemMeta meta = yml.getItemStack(o).getItemMeta();
+                            final YamlConfiguration yml = ItemConfig.getMapYml(o);
+                            final ItemMeta meta = yml.getItemStack(o + ".item").getItemMeta();
                             String name = null;
                             if (meta != null) {
                                 name = meta.getDisplayName() + " §e的材料";
@@ -165,7 +162,7 @@ public class OnCommand implements CommandExecutor {
                     player.sendMessage("§a---------------§4 点击领取§a---------------");
                     return true;
                 }
-                if (args[1].equals("give") && args.length >= 2) {
+                if (args[1].equalsIgnoreCase("give") && args.length >= 2) {
                     if (!(Bukkit.getPlayer(args[2]) instanceof Player) && (ItemConfig.getList().contains(args[2]))) {
                         final YamlConfiguration yml = ItemConfig.getMaterialYml(args[2]);
                         final ConfigurationSection section = yml.getConfigurationSection(args[2]);
@@ -204,6 +201,15 @@ public class OnCommand implements CommandExecutor {
                         return true;
                     }
                 }
+            }
+            if (args[0].equalsIgnoreCase("reload") && (player.hasPermission("dz.reload")) && (args.length == 1)) {
+                Config.loadConfig();
+                Message.loadMessage();
+                ItemConfig.loadMapConfig();
+                ItemConfig.loadItemConfig();
+                ItemConfig.loadMaterialConfig();
+                player.sendMessage(Message.getMessage("Reload"));
+                return true;
             }
         }
         return false;
