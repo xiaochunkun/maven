@@ -1,7 +1,7 @@
 name: Forge
 main: xiaokun.forge.Forge
-version: 1.0.1
+version: 1.0.2
 author: Xiaokun
-depends: [PlaceHolderAPI]
+softdepend: [PlaceholderAPI]
 commands:
   dz:
