@@ -1,0 +1,4 @@
+name: VexTest
+version: ${project.version}
+main: com.xiaokun.vextest.vextest.VexTest
+depend: [VexView]

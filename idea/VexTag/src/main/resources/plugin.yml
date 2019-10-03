@@ -1,0 +1,6 @@
+name: VexTag
+version: ${project.version}
+main: com.xiaokun.vextag.VexTag
+api-version: 1.13
+depend: [VexView]
+authors: [XiaoKun]

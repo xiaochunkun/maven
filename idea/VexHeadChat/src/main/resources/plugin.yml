@@ -1,0 +1,5 @@
+name: VexHeadChat
+version: ${project.version}
+main: com.xiaokun.vexheadchat.Vexheadchat
+depend: [VexView]
+authors: [XiaoKun]

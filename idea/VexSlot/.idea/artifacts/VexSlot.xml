@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="VexSlot">
+    <output-path>$PROJECT_DIR$/out/artifacts/VexSlot</output-path>
+    <root id="archive" name="VexSlot.jar">
+      <element id="module-output" name="VexSlot" />
+    </root>
+  </artifact>
+</component>

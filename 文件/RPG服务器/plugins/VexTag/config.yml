@@ -1,0 +1,33 @@
+text:
+  use: true #文字开关
+  id: '文字'
+  x: 0
+  y: 3 #最好不要低于2.7
+  z: 0
+  prefix: '§a'
+  length: 10
+  black: true #背景是否无黑框
+  tag:
+    x: 0
+    y: 0
+    z: 0
+    for: true #跟随玩家（跟随显示该Tag的玩家转向而转向）,否则跟随视野（如同玩家名称，始终朝向另一个玩家看他的视野）
+    see: true #拥有这个Tag玩家是否可以自己的Tag（就是除了自己以外其他所有人都看得到）
+image:
+  use: false #2.4有转BUG  图片不推荐使用
+  id: '背景'
+  x: 0
+  y: 3.1
+  z: 0.01 #比文字多0.01  就能把图片贴在文字背后
+  url: '[local]item.png'
+  w: 80
+  h: 30
+  xshow: 0.8
+  yshow: 0.4
+  tag:
+    x: 0
+    y: 0
+    z: 0
+    for: false
+    see: true
+time: 5 # 持续时间
